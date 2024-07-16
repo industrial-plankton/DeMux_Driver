@@ -104,4 +104,20 @@ public:
         return demux.getState(pinNumber);
     }
 };
+
+class DeMuxedPin_DigFromAnalog : public DigitalInput
+{
+private:
+    DeMux_Driver_Analog &demux;
+    uint8_t pinNumber;
+    uint8_t threshold = 1;
+
+public:
+    DeMuxedPin_DigFromAnalog(DeMux_Driver_Analog &demux, uint8_t pinNumber, uint8_t threshold) : demux{demux}, pinNumber{pinNumber}, threshold{threshold} {};
+    ~DeMuxedPin_DigFromAnalog(){};
+    PinState getState() const
+    {
+        return static_cast<PinState>(demux.getState(pinNumber) > threshold);
+    }
+};
 #endif
