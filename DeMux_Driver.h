@@ -44,13 +44,20 @@ class DeMuxedPin : public DigitalInput
 private:
     DeMux_Driver &demux;
     uint8_t pinNumber;
+    unsigned long lastRead = millis();
+    PinState cachedState = Low;
 
 public:
     DeMuxedPin(DeMux_Driver &demux, uint8_t pinNumber) : demux{demux}, pinNumber{pinNumber} {};
     ~DeMuxedPin(){};
     PinState getState() const
     {
-        return demux.getState(pinNumber);
+        if (millis() - lastRead > 2)
+        {
+            const_cast<DeMuxedPin *>(this)->cachedState = demux.getState(pinNumber);
+            const_cast<DeMuxedPin *>(this)->lastRead = millis();
+        }
+        return cachedState;
     }
 };
 
@@ -95,13 +102,20 @@ class DeMuxedPin_Analog : public AnalogInput
 private:
     DeMux_Driver_Analog &demux;
     uint8_t pinNumber;
+    unsigned long lastRead = millis();
+    int cachedState = Low;
 
 public:
     DeMuxedPin_Analog(DeMux_Driver_Analog &demux, uint8_t pinNumber) : demux{demux}, pinNumber{pinNumber} {};
     ~DeMuxedPin_Analog(){};
     int getState() const
     {
-        return demux.getState(pinNumber);
+        if (millis() - lastRead > 2)
+        {
+            const_cast<DeMuxedPin_Analog *>(this)->cachedState = demux.getState(pinNumber);
+            const_cast<DeMuxedPin_Analog *>(this)->lastRead = millis();
+        }
+        return cachedState;
     }
 };
 
