@@ -35,7 +35,7 @@ public:
         S2.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b0100)));
         S3.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b1000)));
         // May need a delay here
-        delay(1);
+        delayMicroseconds(1);
         return Common.getState();
     }
 };
@@ -53,7 +53,7 @@ public:
     ~DeMuxedPin() {};
     PinState getState() const
     {
-        if (millis() - lastRead > 50)
+        if (millis() - lastRead > 40)
         {
             const_cast<DeMuxedPin *>(this)->cachedState = demux.getState(pinNumber);
             const_cast<DeMuxedPin *>(this)->lastRead = millis();
@@ -94,7 +94,7 @@ public:
         S2.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b0100)));
         S3.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b1000)));
         // May need a delay here
-        delay(1);
+        delayMicroseconds(1);
         return Common.getState();
     }
 };
@@ -112,7 +112,7 @@ public:
     ~DeMuxedPin_Analog() {};
     int getState() const
     {
-        if (millis() - lastRead > 100)
+        if (millis() - lastRead > 40)
         {
             const_cast<DeMuxedPin_Analog *>(this)->cachedState = demux.getState(pinNumber);
             const_cast<DeMuxedPin_Analog *>(this)->lastRead = millis();
@@ -135,7 +135,7 @@ public:
     ~DeMuxedPin_DigFromAnalog() {};
     PinState getState() const
     {
-        if (millis() - lastRead > 100)
+        if (millis() - lastRead > 40)
         {
             const_cast<DeMuxedPin_DigFromAnalog *>(this)->cachedState = demux.getState(pinNumber);
             const_cast<DeMuxedPin_DigFromAnalog *>(this)->lastRead = millis();
