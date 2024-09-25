@@ -14,14 +14,14 @@ private:
     DigitalOutput &S1;
     DigitalOutput &S2;
     DigitalOutput &S3;
-    DigitalInput &Common;
+    const DigitalInput &Common;
 
 public:
     DeMux_Driver(DigitalOutput &S0,
                  DigitalOutput &S1,
                  DigitalOutput &S2,
                  DigitalOutput &S3,
-                 DigitalInput &Common) : S0{S0}, S1{S1}, S2{S2}, S3{S3}, Common{Common} {};
+                 const DigitalInput &Common) : S0{S0}, S1{S1}, S2{S2}, S3{S3}, Common{Common} {};
     ~DeMux_Driver() {};
 
     PinState getState(uint8_t pinNumber)
@@ -44,7 +44,7 @@ class DeMuxedPin : public DigitalInput
 {
 private:
     DeMux_Driver &demux;
-    uint8_t pinNumber;
+    const uint8_t pinNumber;
     unsigned long lastRead = millis();
     PinState cachedState = Low;
 
@@ -73,14 +73,14 @@ private:
     DigitalOutput &S1;
     DigitalOutput &S2;
     DigitalOutput &S3;
-    AnalogInput &Common;
+    const AnalogInput &Common;
 
 public:
     DeMux_Driver_Analog(DigitalOutput &S0,
                         DigitalOutput &S1,
                         DigitalOutput &S2,
                         DigitalOutput &S3,
-                        AnalogInput &Common) : S0{S0}, S1{S1}, S2{S2}, S3{S3}, Common{Common} {};
+                        const AnalogInput &Common) : S0{S0}, S1{S1}, S2{S2}, S3{S3}, Common{Common} {};
     ~DeMux_Driver_Analog() {};
 
     int getState(uint8_t pinNumber)
@@ -103,7 +103,7 @@ class DeMuxedPin_Analog : public AnalogInput
 {
 private:
     DeMux_Driver_Analog &demux;
-    uint8_t pinNumber;
+    const uint8_t pinNumber;
     unsigned long lastRead = millis();
     int cachedState = 0;
 
@@ -125,8 +125,8 @@ class DeMuxedPin_DigFromAnalog : public DigitalInput
 {
 private:
     DeMux_Driver_Analog &demux;
-    uint8_t pinNumber;
-    int threshold = 1;
+    const uint8_t pinNumber;
+    const int threshold;
     unsigned long lastRead = millis();
     int cachedState = 0;
 
