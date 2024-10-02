@@ -30,11 +30,10 @@ public:
         {
             return floating;
         }
-        S0.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b0001))); // Cast to bool prevent setting to floating
-        S1.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b0010)));
-        S2.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b0100)));
-        S3.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b1000)));
-        // May need a delay here
+        S0.setState(pinNumber & 0b0001 ? High : Low);
+        S1.setState(pinNumber & 0b0010 ? High : Low);
+        S2.setState(pinNumber & 0b0100 ? High : Low);
+        S3.setState(pinNumber & 0b1000 ? High : Low);
         delayMicroseconds(1);
         return Common.getState();
     }
@@ -89,11 +88,10 @@ public:
         {
             return floating;
         }
-        S0.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b0001))); // Cast to bool prevent setting to floating
-        S1.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b0010)));
-        S2.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b0100)));
-        S3.setState(static_cast<PinState>(static_cast<bool>(pinNumber & 0b1000)));
-        // May need a delay here
+        S0.setState(pinNumber & 0b0001 ? High : Low);
+        S1.setState(pinNumber & 0b0010 ? High : Low);
+        S2.setState(pinNumber & 0b0100 ? High : Low);
+        S3.setState(pinNumber & 0b1000 ? High : Low);
         delayMicroseconds(1);
         return Common.getState();
     }
@@ -139,7 +137,7 @@ public:
         {
             const_cast<DeMuxedPin_DigFromAnalog *>(this)->cachedState = demux.getState(pinNumber);
             const_cast<DeMuxedPin_DigFromAnalog *>(this)->lastRead = millis();
-            return static_cast<PinState>(cachedState > threshold); // static_cast<PinState>(demux.getState(pinNumber) > threshold);
+            return cachedState > threshold ? High : Low;
         }
     }
 };
