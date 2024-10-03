@@ -137,8 +137,8 @@ public:
         {
             const_cast<DeMuxedPin_DigFromAnalog *>(this)->cachedState = demux.getState(pinNumber);
             const_cast<DeMuxedPin_DigFromAnalog *>(this)->lastRead = millis();
-            return cachedState > threshold ? High : Low;
         }
+        return cachedState > threshold ? High : Low;
     }
 };
 #endif
