@@ -34,7 +34,7 @@ public:
         S1.setState(pinNumber & 0b0010 ? High : Low);
         S2.setState(pinNumber & 0b0100 ? High : Low);
         S3.setState(pinNumber & 0b1000 ? High : Low);
-        delayMicroseconds(1);
+        // delayMicroseconds(1);
         return Common.getState();
     }
 };
@@ -92,7 +92,7 @@ public:
         S1.setState(pinNumber & 0b0010 ? High : Low);
         S2.setState(pinNumber & 0b0100 ? High : Low);
         S3.setState(pinNumber & 0b1000 ? High : Low);
-        delayMicroseconds(1);
+        // delayNanoseconds(1);
         return Common.getState();
     }
 };
@@ -139,6 +139,72 @@ public:
             const_cast<DeMuxedPin_DigFromAnalog *>(this)->lastRead = millis();
         }
         return cachedState > threshold ? High : Low;
+    }
+};
+
+template <typename T, unsigned int Size>
+class CircularBuffer
+{
+private:
+    T _store[Size] = {0};
+    unsigned int _position = 0; // _position variable for circular buffer
+    unsigned int _count = 0;
+
+public:
+    CircularBuffer() {};
+    ~CircularBuffer() {};
+    void push(T entry);
+    T at(unsigned int position);
+    T size() const { return Size; };
+};
+
+template <typename T, unsigned int Size>
+void CircularBuffer<T, Size>::push(T entry)
+{
+    if (_count < Size)
+    {
+        _count++;
+    }
+    _store[_position] = entry;
+    _position = (_position + 1) % Size; // Use modulo to handle wrap-around
+}
+
+template <typename T, unsigned int Size>
+T CircularBuffer<T, Size>::at(unsigned int position)
+{
+    return _store[(_position + position) % _count]; // Use modulo to handle wrap-around
+}
+
+class DeMuxedPin_AC_Analog
+{
+private:
+    DeMux_Driver_Analog &demux;
+    const uint8_t pinNumber;
+    unsigned long lastRead = millis();
+    CircularBuffer<int, 500> buffer;
+    int cachedState = 0;
+
+public:
+    DeMuxedPin_AC_Analog(DeMux_Driver_Analog &demux, uint8_t pinNumber) : demux{demux}, pinNumber{pinNumber}, buffer() {};
+    ~DeMuxedPin_AC_Analog() {};
+    int getState()
+    {
+        // if (millis() - lastRead > 2)
+        // {
+        const auto newReading = demux.getState(pinNumber);
+        buffer.push(newReading);
+        auto highestReading = 0;
+        for (int i = 0; i < buffer.size(); i++)
+        {
+            if (buffer.at(i) > highestReading)
+            {
+                highestReading = buffer.at(i);
+            }
+        }
+        cachedState = highestReading;
+        //     lastRead = millis();
+        // }
+        return cachedState;
     }
 };
 #endif
