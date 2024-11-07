@@ -34,7 +34,7 @@ public:
         S1.setState(pinNumber & 0b0010 ? High : Low);
         S2.setState(pinNumber & 0b0100 ? High : Low);
         S3.setState(pinNumber & 0b1000 ? High : Low);
-        // delayMicroseconds(1);
+        delayNanoseconds(100); // Propagation delay, Data sheet page 13
         return Common.getState();
     }
 };
@@ -92,7 +92,7 @@ public:
         S1.setState(pinNumber & 0b0010 ? High : Low);
         S2.setState(pinNumber & 0b0100 ? High : Low);
         S3.setState(pinNumber & 0b1000 ? High : Low);
-        // delayNanoseconds(1);
+        delayNanoseconds(100); // Propagation delay, Data sheet page 13
         return Common.getState();
     }
 };
