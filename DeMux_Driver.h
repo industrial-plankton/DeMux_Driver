@@ -119,6 +119,29 @@ public:
     }
 };
 
+class DeMuxedPin_Analog_AC : public AnalogInput
+{
+private:
+    DeMux_Driver_Analog &demux;
+    const uint8_t pinNumber;
+    unsigned long lastRead = millis();
+    int cachedState = 0;
+
+public:
+    DeMuxedPin_Analog_AC(DeMux_Driver_Analog &demux, uint8_t pinNumber) : demux{demux}, pinNumber{pinNumber} {};
+    ~DeMuxedPin_Analog_AC() {};
+    int getState() const
+    {
+        if (millis() - lastRead > 1) // Cache for 2 ms
+        {
+            auto val = demux.getState(pinNumber);
+            const_cast<DeMuxedPin_Analog_AC *>(this)->cachedState = cachedState - 1 < val ? val : cachedState - 1; // demux.getState(pinNumber);
+            const_cast<DeMuxedPin_Analog_AC *>(this)->lastRead = millis();
+        }
+        return cachedState;
+    }
+};
+
 class DeMuxedPin_DigFromAnalog : public DigitalInput
 {
 private:
@@ -139,6 +162,41 @@ public:
             const_cast<DeMuxedPin_DigFromAnalog *>(this)->lastRead = millis();
         }
         return cachedState > threshold ? High : Low;
+    }
+};
+
+class DeMuxedPin_DigFromAnalog_AC : public DigitalInput
+{
+private:
+    DeMux_Driver_Analog &demux;
+    const uint8_t pinNumber;
+    const int threshold;
+    unsigned long lastRead = millis();
+    int cachedState = 0;
+
+public:
+    DeMuxedPin_DigFromAnalog_AC(DeMux_Driver_Analog &demux, uint8_t pinNumber, int threshold) : demux{demux}, pinNumber{pinNumber}, threshold{threshold} {};
+    ~DeMuxedPin_DigFromAnalog_AC() {};
+    PinState getState() const
+    {
+        if (millis() - lastRead > 1) // Cache for 2 ms
+        {
+            auto val = demux.getState(pinNumber);
+            const_cast<DeMuxedPin_DigFromAnalog_AC *>(this)->cachedState = cachedState - 1 < val ? val : cachedState - 1; // demux.getState(pinNumber);
+            const_cast<DeMuxedPin_DigFromAnalog_AC *>(this)->lastRead = millis();
+        }
+        return cachedState > threshold ? High : Low;
+    }
+
+    int getAnalogState()
+    {
+        if (millis() - lastRead > 1) // Cache for 2 ms
+        {
+            auto val = demux.getState(pinNumber);
+            cachedState = cachedState - 1 < val ? val : cachedState - 1; // demux.getState(pinNumber);
+            lastRead = millis();
+        }
+        return cachedState;
     }
 };
 #endif
