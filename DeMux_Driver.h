@@ -188,13 +188,13 @@ public:
         return cachedState > threshold ? High : Low;
     }
 
-    int getAnalogState()
+    int getAnalogState() const
     {
         if (millis() - lastRead > 1) // Cache for 2 ms
         {
             auto val = demux.getState(pinNumber);
-            cachedState = cachedState - 1 < val ? val : cachedState - 1; // demux.getState(pinNumber);
-            lastRead = millis();
+            const_cast<DeMuxedPin_DigFromAnalog_AC *>(this)->cachedState = cachedState - 1 < val ? val : cachedState - 1; // demux.getState(pinNumber);
+            const_cast<DeMuxedPin_DigFromAnalog_AC *>(this)->lastRead = millis();
         }
         return cachedState;
     }
