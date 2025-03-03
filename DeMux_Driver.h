@@ -163,6 +163,11 @@ public:
         }
         return cachedState > threshold ? High : Low;
     }
+
+    int getAnalogState() const
+    {
+        return cachedState;
+    }
 };
 
 class DeMuxedPin_DigFromAnalog_AC : public DigitalInput
